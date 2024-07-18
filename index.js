@@ -1,14 +1,16 @@
 const express = require('express')
 const app = express()
 const cors = require('cors');
-
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
 const port = process.env.PORT || 5500;
 
 //middlewares
 app.use(cors());
 app.use(express.json());
 require('dotenv').config()
-
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 
 
@@ -18,7 +20,7 @@ app.get('/', (req, res) => {
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.db_user_name}:${process.env.db_user_password}@cluster-sajib.cqfdgne.mongodb.net/?appName=Cluster-Sajib`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -59,7 +61,7 @@ async function run() {
           }
   
           req.decoded = decoded;
-          console.log('varified')
+          console.log('jwt varified')
           next();
         })
   
@@ -88,6 +90,21 @@ async function run() {
     })
 
 
+    app.put('/userApproval:id', async(req,res)=>{
+      const id = req.params.id;
+      const value = req.body;
+
+      const query = {_id : new ObjectId(id)};
+
+      const update = { 
+        $set:{
+          status: value
+        }
+      }
+
+      const r = await UsersCollection.updateOne(query, update)
+      res.send(r);
+    })
 
 
     // Send a ping to confirm a successful connection
