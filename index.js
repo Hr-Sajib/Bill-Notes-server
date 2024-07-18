@@ -90,10 +90,11 @@ async function run() {
     })
 
 
-    app.put('/userApproval:id', async(req,res)=>{
-      const id = req.params.id;
-      const value = req.body;
 
+
+    app.put('/userApproval/:id', async(req,res)=>{
+      const id = req.params.id;
+      const {value} = req.body;
       const query = {_id : new ObjectId(id)};
 
       const update = { 
@@ -104,7 +105,10 @@ async function run() {
 
       const r = await UsersCollection.updateOne(query, update)
       res.send(r);
+
     })
+
+
 
 
     // Send a ping to confirm a successful connection
